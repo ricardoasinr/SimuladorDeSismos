@@ -11,9 +11,9 @@ int LedRojo_pin = 1
 int LedAmarillo_pin = 2
 int LedVerde_pin
 int LedAmarillo_pin
-int LedVerde_pin = 3
+int LedVerde_pin
 
-int Buzzer_pin 
+int Buzzer_pin = 6
 
 //Variables para el desarrollo del programa
 int estadoDeSistema = 0
