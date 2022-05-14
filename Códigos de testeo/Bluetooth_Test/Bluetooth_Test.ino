@@ -3,10 +3,12 @@ char x;
 
 void setup(){
   Serial.begin(9600);
+  pinMode(13, OUTPUT);
 }
  
 void loop(){
-   
+
+   //digitalWrite(13, HIGH);
    while(Serial.available()>0){
       delay(10);
       x = Serial.read(); 
@@ -14,6 +16,13 @@ void loop(){
    }
    if(s.length() > 0){
     Serial.println(s); 
+   }
+   if(s=="Hola"){
+    digitalWrite(13, HIGH);
+   }
+   if(s=="Chau"){
+    digitalWrite(13, LOW
+    +++++++++);
    }
    s="";
 }
