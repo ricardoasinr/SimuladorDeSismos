@@ -8,7 +8,7 @@ Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);
 
 //Puertos utulizados 
 int LedRojo_pin = 1
-int LedAmarillo_pin
+int LedAmarillo_pin = 2
 int LedVerde_pin
 int Buzzer_pin 
 
