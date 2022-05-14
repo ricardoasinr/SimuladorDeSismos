@@ -7,14 +7,12 @@
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
 //Puertos utulizados 
-int LedRojo_pin = 1
-int LedAmarillo_pin = 2
-int LedVerde_pin = 3
-int LedAmarillo_pin = 4
-int LedVerde_pin = 5
-
-
-int Buzzer_pin = 6
+int LedRojo_pin = 1;
+int LedAmarillo_pin = 2;
+int LedVerde_pin = 3;
+int LedAmarillo_pin = 4;
+int LedVerde_pin = 5;
+int Buzzer_pin = 6;
 
 //Variables para el desarrollo del programa
 int estadoDeSistema = 0
