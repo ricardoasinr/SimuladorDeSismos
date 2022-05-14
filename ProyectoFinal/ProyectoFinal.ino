@@ -21,7 +21,7 @@ int estadoDeSistema = 0;
 
 //Sistema bluetooth
 
-
+Serial.println("Modo bluetooth ON");
 
 //Hola Mateo
 
