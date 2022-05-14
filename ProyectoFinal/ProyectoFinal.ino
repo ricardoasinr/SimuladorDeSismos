@@ -4,6 +4,7 @@
 #define ANCHO 128 
 #define ALTO 64    
 #define OLED_RESET 4  
+#include <Keypad.h> 
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
 //Puertos utulizados 
@@ -13,7 +14,7 @@ int LedVerde_pin = 3;
 int Buzzer_pin = 7;
 
 //Variables para el desarrollo del programa
-int estadoDeSistema = 0
+int estadoDeSistema = 0;
 
 
 
@@ -24,7 +25,7 @@ int estadoDeSistema = 0
 
 
 //Teclado
-#include <Keypad.h> 
+
 const byte FILAS=4;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
@@ -118,3 +119,4 @@ void loop() {
         break;      
     }
    } 
+}
