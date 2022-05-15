@@ -39,6 +39,87 @@ Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLU
 char tecla;
 
 
+//Menus
+void off()
+{
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(25, 15);
+  oled.setTextSize(2);
+  oled.print("Sistema");
+  oled.setCursor(25, 35);
+  oled.setTextSize(2);
+  oled.print("Apagado");
+  oled.display();
+  digitalWrite(ledrojo_pin, LOW);
+  digitalWrite(ledverde_pin, LOW);
+  digitalWrite(ledamarillo_pin, LOW);
+
+
+}
+void  menuINT()
+{
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(5, 0);
+  oled.setTextSize(2);
+  oled.println("INTENSIDAD");
+  oled.setTextSize(1);
+  oled.println("");
+  oled.println("1.   1");
+  oled.println("2.   2");
+  oled.println("3.   3");
+  oled.println("4.   4");
+  oled.display();
+}
+
+void  menutiempo()
+{
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(5, 0);
+  oled.setTextSize(2);
+  oled.println("--TIEMPO--");
+  oled.setTextSize(1);
+  oled.println("");
+  oled.println("1.  15 seg");
+  oled.println("2.  30 seg");
+  oled.println("3.  45 seg");
+  oled.println("4.  1 min");
+  oled.display();
+}
+
+void  menupri()
+{
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(0, 0);
+  oled.setTextSize(2);
+  oled.println("---MENU---");
+  oled.println("");
+  oled.setTextSize(1);
+  oled.println("1.  Intensidad");
+  oled.println("2.  Tiempo");
+  oled.display();
+
+}
+void  aviso()
+{
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(0, 0);
+  oled.setTextSize(2);
+  oled.println("  AVISO!!");
+  oled.println("");
+  oled.setTextSize(1);
+  oled.println(" Tiempo e intensidad");
+  oled.println(" requerida antes de");
+  oled.println("iniciar la simulacion");
+  oled.display();
+
+}
+
+
 
 void setup() { 
   
