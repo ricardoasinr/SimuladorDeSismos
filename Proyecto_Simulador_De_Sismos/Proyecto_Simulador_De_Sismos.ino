@@ -1,4 +1,3 @@
-//Librerias
 #include <Adafruit_GFX.h>  
 #include <Adafruit_SSD1306.h> 
 #define ANCHO 128 
@@ -7,41 +6,23 @@
 #include <Keypad.h> 
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
-//Puertos utulizados 
-int LedRojo_pin = 1;
-int LedAmarillo_pin = 2;
-int LedVerde_pin = 3;
-int Buzzer_pin = 7;
+int sw;
+#define sw1 A0
+#define buzzer_pin 13 
 
-//Variables para el desarrollo del programa
-int estadoDeSistema = 0;
-
-
-
-
-//Sistema bluetooth
-
-
-
-//Teclado
-
-const byte FILAS=4;
+const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
   {'1','2','3','A'},
-  {'4','5','6','B'}, 
-  {'7','8','9','C'}, 
-  {'*','0','#','D'} 
+  {'4','5','6','B'}
 };
-byte pinesFilas[FILAS]= {13,12,11,10};
-byte pinesColumnas[COLUMNAS]= {9,8,7,6};
+byte pinesFilas[FILAS]= {8,9};
+byte pinesColumnas[COLUMNAS]= {10,11,12,13};
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 char tecla;
 
-
-//Menus
-void off()
-{
+void off(){
+  
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(25, 15);
@@ -51,14 +32,10 @@ void off()
   oled.setTextSize(2);
   oled.print("Apagado");
   oled.display();
-  digitalWrite(ledrojo_pin, LOW);
-  digitalWrite(ledverde_pin, LOW);
-  digitalWrite(ledamarillo_pin, LOW);
-
-
 }
-void  menuINT()
-{
+
+void  menu_intensidad(){
+  
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(5, 0);
@@ -66,15 +43,16 @@ void  menuINT()
   oled.println("INTENSIDAD");
   oled.setTextSize(1);
   oled.println("");
-  oled.println("1.   1");
-  oled.println("2.   2");
-  oled.println("3.   3");
-  oled.println("4.   4");
+  oled.println("1. (M2)     3.(M5)");
+  oled.println("");
+  oled.println("2. (M3,5)   4.(M7)");
+  oled.println("");
+  oled.println("A. Volver  M=Magnitud");
   oled.display();
 }
 
-void  menutiempo()
-{
+void  menu_tiempo(){
+  
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(5, 0);
@@ -82,15 +60,16 @@ void  menutiempo()
   oled.println("--TIEMPO--");
   oled.setTextSize(1);
   oled.println("");
-  oled.println("1.  15 seg");
-  oled.println("2.  30 seg");
-  oled.println("3.  45 seg");
-  oled.println("4.  1 min");
+  oled.println("1. 15s     3. 45s");
+  oled.println("");
+  oled.println("2. 30s     4. 1min");
+  oled.println("");
+  oled.println("A. Volver");
   oled.display();
 }
 
-void  menupri()
-{
+void  menu_principal(){
+
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(0, 0);
@@ -98,105 +77,129 @@ void  menupri()
   oled.println("---MENU---");
   oled.println("");
   oled.setTextSize(1);
-  oled.println("1.  Intensidad");
-  oled.println("2.  Tiempo");
-  oled.display();
-
-}
-void  aviso()
-{
-  oled.clearDisplay();
-  oled.setTextColor(WHITE);
-  oled.setCursor(0, 0);
-  oled.setTextSize(2);
-  oled.println("  AVISO!!");
+  oled.println("1.  Intensidad");  
   oled.println("");
-  oled.setTextSize(1);
-  oled.println(" Tiempo e intensidad");
-  oled.println(" requerida antes de");
-  oled.println("iniciar la simulacion");
+  oled.println("2.  Tiempo");
+  oled.println("");
   oled.display();
-
 }
 
+void  aviso(){
+  
+   oled.clearDisplay();
+   oled.setTextColor(WHITE);
+   oled.setCursor(0, 0);
+   oled.setTextSize(2);
+   oled.println("  AVISO!!");
+   oled.println("");
+   oled.setTextSize(1);
+   oled.println(" Tiempo e intensidad");
+   oled.println(" requerida antes de");
+   oled.println("iniciar la simulacion");
+   oled.display();
+}
 
+void sonido_M2(){
+
+  tone(buzzer_pin, 1700);
+  delay(200);
+  noTone(buzzer_pin);
+}
+
+void sonido_M3_5(){
+
+  tone(buzzer_pin, 1700);
+  delay(200);
+  noTone(buzzer_pin); 
+}
+
+void sonido_M5(){
+
+  tone(buzzer_pin, 1700);
+  delay(200);
+  noTone(buzzer_pin);
+}
+
+void sonido_M7(){
+
+  tone(buzzer_pin, 1700);
+  delay(200);
+  noTone(buzzer_pin);
+}
+
+void volver(){
+  
+  tecla='X';
+}
 
 void setup() { 
-  
+
   Serial.begin(9600);
   Wire.begin();        
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); 
   oled.clearDisplay();
   oled.display();
- 
- 
-  pinMode(LedRojo_pin, OUTPUT);
-  pinMode(LedAmarillo_pin, OUTPUT);
-  pinMode(LedVerde_pin, OUTPUT);
-  pinMode(Buzzer_pin, OUTPUT);
-
-  
 }
  
 void loop() {
-//Pantalla1
-
-  if (estadoDeSistema==0)
-  { 
-    oled.clearDisplay();
-    oled.setTextColor(WHITE); 
-    oled.setCursor(0, 30);    
-    oled.setTextSize(1);      
-    oled.print("Sistema: Apagado");
-    oled.display(); 
-  }
-  else
-  {
-    oled.clearDisplay();
-    oled.setTextColor(WHITE);  
-    oled.setCursor(0, 0);     
-    oled.setTextSize(1);     
-    oled.print("Sistema: Encendido");
-    oled.setCursor(0, 15);
-    oled.print("Opciones del menu"); 
-    oled.print("1. "); 
-    oled.setCursor(0, 30);
-    oled.print("2. "); 
-    oled.display(); 
-  }
-
-// Control del sismo
-
-
-
-
   
-// Teclado
- tecla= teclado.getKey(); // obtiene tecla presionada y asigna el valor a TECLA  
-  if (tecla)
-  {
-    Serial.println(tecla);
-    delay(10);
-    switch (tecla)
-    {
-      case '1':       
-        //Menu [1]
-        break;
-        
-      case '2':
-        //Menu [2]
-        break;
-        
-      case '3':
-        //Menu [3]
-        break;
+  sw = digitalRead(sw1);
+  
+  if(sw==1){
+    
+    menu_principal();
+    tecla=teclado.getKey();
+    
+    if (tecla){
 
-      case '4':
-        //Menu [4]
-        break;
+     delay(10);
+    
+     while(tecla=='1'){
+
+        
+        menu_intensidad();
+        char aux = teclado.getKey();  
+        
+        switch(aux){  
+        
+        case '1': break; 
+
+        case '2': break; 
+
+        case '3': break; 
+
+        case '4': break; 
       
-      default: 
-        break;      
-    }
-   } 
+        case 'A': volver(); break; 
+      
+        }
+      }
+    
+      while(tecla=='2'){
+
+        menu_tiempo();
+        char aux =teclado.getKey();
+
+        switch(aux){
+
+          case '1':  break;
+
+          case '2':  break;
+
+          case '3':  break;
+
+          case '4':  break;
+
+          case 'A': volver(); break;
+      
+        }
+      }
+    }  
+  }
+  
+ else{
+    
+    off();
+    
+  }
 }
