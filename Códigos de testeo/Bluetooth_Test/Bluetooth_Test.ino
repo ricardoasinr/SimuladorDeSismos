@@ -1,14 +1,15 @@
 String s; 
 char x;
+#include<Servo.h>
+Servo servo1;
 
 void setup(){
   Serial.begin(9600);
-  pinMode(13, OUTPUT);
+  servo1.attach(5);
 }
  
 void loop(){
-
-   //digitalWrite(13, HIGH);
+  
    while(Serial.available()>0){
       delay(10);
       x = Serial.read(); 
@@ -17,12 +18,20 @@ void loop(){
    if(s.length() > 0){
     Serial.println(s); 
    }
-   if(s=="Hola"){
-    digitalWrite(13, HIGH);
+   while(s=="fuerte"){
+    for(int k=0; k<=180; k++){
+      servo1.write(k);
+      delay(1);
+      break;
+    
+     }
    }
-   if(s=="Chau"){
-    digitalWrite(13, LOW
-    +++++++++);
+   while(s=="suave"){
+    for(int k=0; k<=180; k++){
+      servo1.write(k);
+      delay(3);
+      break;
+    }
    }
    s="";
 }
