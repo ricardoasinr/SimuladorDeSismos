@@ -158,7 +158,7 @@ void setup() {
 }
  
 void loop() {
-sw = 1;
+sw = 1; ///ESTO HAY QUE MODIFICAR
 tecla= teclado.getKey();
 Serial.println(tecla);
 
