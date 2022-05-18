@@ -1,14 +1,16 @@
 #include <Adafruit_GFX.h>  
 #include <Adafruit_SSD1306.h> 
+#include <Keypad.h> 
 #define ANCHO 128 
 #define ALTO 64    
 #define OLED_RESET 4  
-#include <Keypad.h> 
+#define sw1 A0
+#define buzzer_pin 4
+
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
 int sw;
-#define sw1 A0
-#define buzzer_pin 4
+
 const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
@@ -129,6 +131,16 @@ void sonido_M7(){
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
+}
+
+
+void quinceSegundos() {
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
+  oled.setCursor(0, 30);     // ubica cursor en inicio de coordenadas 0,0
+  oled.setTextSize(1);      // establece tamano de texto en 1
+  oled.print("15 segundos");
+  oled.display();
 }
 
 void volver(){
@@ -261,7 +273,7 @@ Serial.println(tecla);
             switch(op)
               {
                 case '1':
-                  //15s
+                  quinceSegundos();
                 break;
                 
                 case '2':
