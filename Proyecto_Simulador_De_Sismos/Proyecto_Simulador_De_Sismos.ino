@@ -8,18 +8,22 @@ Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);
 
 int sw;
 #define sw1 A0
-#define buzzer_pin 13 
-
+#define buzzer_pin 4
 const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
   {'1','2','3','A'},
   {'4','5','6','B'}
 };
-byte pinesFilas[FILAS]= {8,9};
-byte pinesColumnas[COLUMNAS]= {10,11,12,13};
+byte pinesFilas[FILAS]= {10,11};
+byte pinesColumnas[COLUMNAS]= {9,8,7,6};
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
+
 char tecla;
+char op='A';
+int estadosistema = 0;
+int menu=0;
+
 
 void off(){
   
@@ -100,28 +104,28 @@ void  aviso(){
 }
 
 void sonido_M2(){
-
+  Serial.println("M2");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
 }
 
 void sonido_M3_5(){
-
+   Serial.println("M3,5");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin); 
 }
 
 void sonido_M5(){
-
+   Serial.println("M5");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
 }
 
 void sonido_M7(){
-
+  Serial.println("M7");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
@@ -142,64 +146,157 @@ void setup() {
 }
  
 void loop() {
+sw = 1;
+tecla= teclado.getKey();
+Serial.println(tecla);
+
+    switch(tecla)
+     {
+        case '1': 
+          op='1';
+          tone(buzzer_pin, 1700);
+          delay(200);
+          noTone(buzzer_pin);
+         break;
+        
+        case '2':
+         op='2';
+         tone(buzzer_pin, 1700);
+         delay(200);
+         noTone(buzzer_pin);
+        break;
+
+        case 'A': 
+          op='A';
+          tone(buzzer_pin, 1700);
+          delay(200);
+          noTone(buzzer_pin);
+         break;
+
+
+         case 'B': 
+          op='B';
+          tone(buzzer_pin, 2700);
+          delay(200);
+          noTone(buzzer_pin);
+         break;
+      }
+
+    if (sw==0)
+      { 
+        off();
+      }
   
-  sw = digitalRead(sw1);
-  
-  if(sw==1){
-    
-    menu_principal();
-    tecla=teclado.getKey();
-    
-    if (tecla){
-
-     delay(10);
-    
-     while(tecla=='1'){
-
+    else
+      {
         
-        menu_intensidad();
-        char aux = teclado.getKey();  
+        estadosistema = 1;
+        if (menu==0){ 
+          switch (op)
+            {
+            case 'A':
+                if (estadosistema==1)
+                  {
+                     menu_principal();
+                  }
+              break;
+              
+            case '1':
+              if (estadosistema==1)
+              {
+                menu_intensidad();  
+                menu=1;  
+              }
+              break;
+
+            case '2':
+              if (estadosistema==1)
+              {
+                 menu_tiempo();
+                menu=2; 
+              }
+              break;
+            
+            
+              break;
         
-        switch(aux){  
-        
-        case '1': break; 
+            default: 
+              break;      
+          }
+        }
 
-        case '2': break; 
 
-        case '3': break; 
+        if (menu==1){
 
-        case '4': break; 
-      
-        case 'A': volver(); break; 
-      
+          if(tecla){
+            switch(op)
+              {
+                case '1':
+                  sonido_M2();
+                break;
+                
+                case '2':
+                  sonido_M3_5();
+                break;
+                
+                case '3':
+                  sonido_M5();
+                break;
+                
+                case '4':
+                  sonido_M7();
+                break;
+                
+                case 'A':
+                  menu=0;
+                break;
+                default: 
+                  break;  
+              }
+
+        }
+        }
+
+        if (menu==2){
+            switch(op)
+              {
+                case '1':
+                  //15s
+                break;
+                
+                case '2':
+                  //30s
+                break;
+                
+                case '3':
+                  //45s
+                break;
+                
+                case '4':
+                  //1min
+                break;    
+                case 'A':
+                  menu=0;
+                break;
+                default: 
+                  break;  
+              }
         }
       }
-    
-      while(tecla=='2'){
 
-        menu_tiempo();
-        char aux =teclado.getKey();
-
-        switch(aux){
-
-          case '1':  break;
-
-          case '2':  break;
-
-          case '3':  break;
-
-          case '4':  break;
-
-          case 'A': volver(); break;
-      
-        }
-      }
-    }  
-  }
-  
- else{
-    
-    off();
-    
-  }
 }
+
+
+
+
+
+        
+        
+          
+
+
+
+
+
+  
+  

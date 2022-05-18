@@ -47,16 +47,6 @@ void setup() {
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); // inicializa pantalla con direccion 0x3C
   oled.clearDisplay();
   oled.display();
-  //////////////////////////////////////
- 
-  pinMode(ledrojo_pin, OUTPUT);
-  pinMode(ledamarillo_pin, OUTPUT);
-  pinMode(ledverde_pin, OUTPUT);
-  pinMode(buzzer_pin, OUTPUT);
-  pinMode(IN1_pin, OUTPUT);
-  pinMode(IN2_pin, OUTPUT);
-  pinMode(ENA_pin, OUTPUT);
-  pinMode(sw1_pin, INPUT);
   
 }
  
@@ -64,40 +54,7 @@ void loop() {
 
 // LECTURAS Y ESCRITURAS DE PUERTOS
 
-  if (estadosentidogiro==0)
-  { digitalWrite(ledamarillo_pin, LOW); }
-  else { digitalWrite(ledamarillo_pin, HIGH); }
-
-  if (estadomotor==0)
-  { digitalWrite(ledrojo_pin, LOW); }
-  else { digitalWrite(ledrojo_pin, HIGH); }
-
-  if (estadosistema==0)
-  { digitalWrite(ledverde_pin, LOW); }
-  else { digitalWrite(ledverde_pin, HIGH); }
-
-
-// CONTROL DE MOTOR
-
-  if (estadomotor==0)
-  { digitalWrite(ENA_pin, LOW); }
-  else
-  {
-     analogWrite(ENA_pin, velocidad);
-  }
-  if (estadosentidogiro==0)
-    {
-              
-        digitalWrite(IN1_pin, HIGH);        
-        digitalWrite(IN2_pin, LOW);       
-    }
-    else
-    {
-              
-        digitalWrite(IN1_pin, LOW);        
-        digitalWrite(IN2_pin, HIGH);       
-    }
- 
+  
   
 // TECLADO MATRICIAL Y BUZZER
  tecla= teclado.getKey(); // obtiene tecla presionada y asigna el valor a TECLA  
