@@ -42,7 +42,7 @@ void off(){
   oled.display();
 }
 
-int  menu_intensidad(){
+void  menu_intensidad(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -58,17 +58,10 @@ int  menu_intensidad(){
   oled.println("A. Volver  M=Magnitud");
   oled.display();
 
-  tecla = teclado.getKey(); 
-  switch(tecla){
-    
-     case '1': return 5; 
-     case '2': return 4; 
-     case '3': return 3; 
-     case '4': return 2; 
 
 }
 
-int  menu_tiempo(){
+void  menu_tiempo(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -83,10 +76,13 @@ int  menu_tiempo(){
   oled.println("");
   oled.println("A. Volver");
   oled.display();
-  
-  do{
-    
-    tecla = teclado.getKey();
+
+}
+
+
+int seleccion_intensidad(){
+
+   int tecla = teclado.getKey();
     if(tecla){
 
     delay(10);
@@ -106,10 +102,13 @@ int  menu_tiempo(){
         return 60;
       }
     }  
-  }
-  while(not tecla);
 
+
+
+  
 }
+
+
 
 void  menu_principal(){
 
@@ -267,8 +266,16 @@ void loop() {
       
       while(tecla=='2'){
 
-      intensidad = menu_intensidad();
-      tiempo = menu_tiempo();
+        menu_intensidad();
+          while(intensidad == 0){
+            intensidad = seleccion_intensidad();
+          }
+      
+
+      
+
+          menu_tiempo();
+     
 
     
       }
