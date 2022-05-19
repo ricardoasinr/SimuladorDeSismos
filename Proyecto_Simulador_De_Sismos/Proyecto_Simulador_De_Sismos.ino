@@ -80,28 +80,19 @@ void  menu_tiempo(){
 }
 
 
-int seleccion_intensidad(){
+int seleccion_intensidad(char aux){
 
-   int tecla = teclado.getKey();
-    if(tecla){
 
-    delay(10);
-    
-      if(tecla=='1'){
-        return 15;    
-      }
-      else if(tecla=='2'){
-        return 30;
-      }
-      else if(tecla == '3'){
 
-        return 45;
-      }
-      else if(tecla== '4'){
+    switch (aux){
+      case '1': return 5; break;
+      case '2': return 4; break;
+      case '3': return 3; break;
+      case '4': return 2; break;
 
-        return 60;
-      }
-    }  
+      
+    }
+  
 
 
 
@@ -266,10 +257,15 @@ void loop() {
       
       while(tecla=='2'){
 
-        menu_intensidad();
+          menu_intensidad();
           while(intensidad == 0){
-            intensidad = seleccion_intensidad();
+          
+            char aux = teclado.getKey();
+            delay(1000);
+            intensidad = seleccion_intensidad(aux);
+            //Serial.println(intensidad);
           }
+          //Serial.println(intensidad);
       
 
       
