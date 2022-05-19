@@ -10,6 +10,9 @@
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
 int sw;
+int tiempo = 0;
+int intensidad= 0;
+int temperatura= 30;
 
 const byte FILAS=2;
 const byte COLUMNAS=4;
@@ -136,17 +139,82 @@ void sonido_M7(){
 
 void quinceSegundos() {
   oled.clearDisplay();
-  oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
-  oled.setCursor(0, 30);     // ubica cursor en inicio de coordenadas 0,0
-  oled.setTextSize(1);      // establece tamano de texto en 1
+  oled.setTextColor(WHITE);  
+  oled.setCursor(0, 30);    
+  oled.setTextSize(1);    
   oled.print("15 segundos");
   oled.display();
 }
 
-void volver(){
-  
-  tecla='X';
+void duracion(int tiempo){
+
+  for(int i=0; i<tiempo+1; i++)
+  {
+    Serial.println(i);
+    delay(1000);
+     oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(1);    
+  oled.println("Tiempo transcurrido");
+
+  oled.setCursor(60, 30);    
+  oled.setTextSize(2);    
+  oled.print(i);
+  oled.display();
+  }
 }
+
+void resumen(int tiempo, int intensidad, int temperatura){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(2);
+  oled.println("-RESUMEN-");
+  
+  oled.setCursor(0,20);    
+  oled.setTextSize(1);    
+  oled.print("Temperatura: ");
+  oled.print(temperatura);
+
+  oled.setCursor(0,30);    
+  oled.setTextSize(1);    
+  oled.print("Intensidad: ");
+  oled.print(intensidad);
+
+  oled.setCursor(0,40);    
+  oled.setTextSize(1);    
+  oled.print("Tiempo: ");
+  oled.print(tiempo);
+  oled.display();
+    
+}
+
+void datosAlmacenados(int tiempo, int intensidad){
+
+  if(tiempo>0 && intensidad>0){
+    oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(2);    
+  oled.println("  Datos   guardados");
+  oled.display();
+    
+  }
+  else
+  {
+    oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(2);    
+  oled.println(" Datos NO guardados");
+  oled.display();
+    
+  }
+  
+}
+  
 
 void setup() { 
 
@@ -158,6 +226,13 @@ void setup() {
 }
  
 void loop() {
+
+  //duracion(15);
+  //resumen(tiempo,intensidad,temperatura);
+  datosAlmacenados(tiempo, intensidad);
+  
+
+  /*
 sw = 1; ///ESTO HAY QUE MODIFICAR
 tecla= teclado.getKey();
 Serial.println(tecla);
@@ -295,7 +370,7 @@ Serial.println(tecla);
               }
         }
       }
-
+*/
 }
 
 
