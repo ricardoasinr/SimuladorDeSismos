@@ -1,14 +1,18 @@
 #include <Adafruit_GFX.h>  
 #include <Adafruit_SSD1306.h> 
+#include <Keypad.h> 
 #define ANCHO 128 
 #define ALTO 64    
 #define OLED_RESET 4  
-#include <Keypad.h> 
+#define sw1 A0
+#define buzzer_pin 4
+
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
 
 int sw;
-#define sw1 A0
-#define buzzer_pin 13 
+int tiempo = 0;
+int intensidad= 0;
+int temperatura= 30;
 
 const byte FILAS=2;
 const byte COLUMNAS=4;
@@ -16,10 +20,15 @@ char keys[FILAS][COLUMNAS]= {
   {'1','2','3','A'},
   {'4','5','6','B'}
 };
-byte pinesFilas[FILAS]= {8,9};
-byte pinesColumnas[COLUMNAS]= {10,11,12,13};
+byte pinesFilas[FILAS]= {10,11};
+byte pinesColumnas[COLUMNAS]= {9,8,7,6};
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
+
 char tecla;
+char op='A';
+int estadosistema = 0;
+int menu=0;
+
 
 
 int intensidad;
@@ -136,37 +145,112 @@ void  menu_principal(){
 }
 
 void sonido_M2(){
-
+  Serial.println("M2");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
 }
 
 void sonido_M3_5(){
-
+   Serial.println("M3,5");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin); 
 }
 
 void sonido_M5(){
-
+   Serial.println("M5");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
 }
 
 void sonido_M7(){
-
+  Serial.println("M7");
   tone(buzzer_pin, 1700);
   delay(200);
   noTone(buzzer_pin);
 }
 
-void volver(){
-  
-  tecla='X';
+
+void quinceSegundos() {
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(0, 30);    
+  oled.setTextSize(1);    
+  oled.print("15 segundos");
+  oled.display();
 }
+
+void duracion(int tiempo){
+
+  for(int i=0; i<tiempo+1; i++)
+  {
+    Serial.println(i);
+    delay(1000);
+     oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(1);    
+  oled.println("Tiempo transcurrido");
+
+  oled.setCursor(60, 30);    
+  oled.setTextSize(2);    
+  oled.print(i);
+  oled.display();
+  }
+}
+
+void resumen(int tiempo, int intensidad, int temperatura){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(2);
+  oled.println("-RESUMEN-");
+  
+  oled.setCursor(0,20);    
+  oled.setTextSize(1);    
+  oled.print("Temperatura: ");
+  oled.print(temperatura);
+
+  oled.setCursor(0,30);    
+  oled.setTextSize(1);    
+  oled.print("Intensidad: ");
+  oled.print(intensidad);
+
+  oled.setCursor(0,40);    
+  oled.setTextSize(1);    
+  oled.print("Tiempo: ");
+  oled.print(tiempo);
+  oled.display();
+    
+}
+
+void datosAlmacenados(int tiempo, int intensidad){
+
+  if(tiempo>0 && intensidad>0){
+    oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(2);    
+  oled.println("  Datos   guardados");
+  oled.display();
+    
+  }
+  else
+  {
+    oled.clearDisplay();
+  oled.setTextColor(WHITE);  
+  oled.setCursor(10, 10);    
+  oled.setTextSize(2);    
+  oled.println(" Datos NO guardados");
+  oled.display();
+    
+  }
+  
+}
+  
 
 void setup() { 
 
@@ -179,6 +263,7 @@ void setup() {
  
 void loop() {
 
+<<<<<<< HEAD
   sw = digitalRead(sw1);
   
   if(sw==1){
@@ -213,3 +298,18 @@ void loop() {
     
   }
 }
+
+
+
+
+
+        
+        
+          
+
+
+
+
+
+  
+  

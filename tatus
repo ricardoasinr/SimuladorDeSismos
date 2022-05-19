@@ -1,0 +1,188 @@
+[33mcommit b49c7bd870e7cc9e5cf90ab2ad1d687553c6de54[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Thu May 19 16:58:07 2022 -0400
+
+    subido el testeo del menu para continuar
+
+[33mcommit 510cebdd7d2c56e45c095fb449c7b7759776f095[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Tue May 17 19:00:17 2022 -0400
+
+    actualizacion de menu con falla en el menu principal
+
+[33mcommit 289bc6dacaa5fc1e35964d0c2a26cc22fb28c186[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Tue May 17 17:31:34 2022 -0400
+
+    actualizado codigo de bluetooth para testeo y de servos
+
+[33mcommit 83227489d54f95778201354ad53619f8efb0924d[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Mon May 16 18:59:52 2022 -0400
+
+    Anadiendo la carpeta componentes
+
+[33mcommit c07b642cb7d0f350c36150ed71ec09a0c3055248[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sun May 15 15:36:04 2022 -0400
+
+    Menus anadidos al proyecto principal
+
+[33mcommit 56e23c4298e91c5d20c5ecad745b95fd2ee34f3e[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sun May 15 10:11:34 2022 -0400
+
+    menu de la primer pantalla para configurar el sismo
+
+[33mcommit 895be6e7896b5dc6841b2a630a950d500be3e5d0[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 19:53:56 2022 -0400
+
+    meti un encencido de led al comando de voz de bluetooth
+
+[33mcommit 89b228d5d7747574651ba06807971b68f2822baa[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 19:33:21 2022 -0400
+
+    subido el teste de bluetooth
+
+[33mcommit edf689b42529890ab22eeff1c547bcbfd659074f[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 18:42:29 2022 -0400
+
+    creacion de carpeta de prueba
+
+[33mcommit 39eea06f5fdad8da519a75bb930b15834076bc35[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 16:08:08 2022 -0400
+
+    arreglo de codigo
+
+[33mcommit 61463140aa7d2516c855df904048f8d0da5e3762[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 16:04:25 2022 -0400
+
+    arreglo de nombre del proyecto y creacion de carpeta con codigos de testeo
+
+[33mcommit b817499f48ee3cd449209a20a2b5de9bdd76928e[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 10:42:29 2022 -0400
+
+    subi un test de un codigo del lab
+
+[33mcommit 0b528a01087dde6b14f661fa48189eb030e70df2[m
+Merge: d83e5e3 66a325e
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sat May 14 10:36:42 2022 -0400
+
+    Salude a Mateo
+
+[33mcommit d83e5e3a16d0a3d3cc09c9b7c68c5877891136b7[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sat May 14 10:34:40 2022 -0400
+
+    Salude a Mateo
+
+[33mcommit 66a325e99bc1f76efabeb1db60301d5504d825a9[m
+Author: Mateo Fernandez <mateo.fersal1203@gmail.com>
+Date:   Sat May 14 10:29:32 2022 -0400
+
+    anadi un print en bluetooth
+
+[33mcommit 495ff760b74270c11d645484a11691a54954b6dd[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sat May 14 00:15:50 2022 -0400
+
+    Revision terminada
+
+[33mcommit 13834b9f5d005a22e6e80a34c18090a2221d93f9[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sat May 14 00:13:29 2022 -0400
+
+    Redefiniendo
+
+[33mcommit 01d9d28ce72e6b0f804c5ec9a6836728bd2c0f46[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Sat May 14 00:11:55 2022 -0400
+
+    Probando el servo
+
+[33mcommit 3ecbfd3e1e49d49e964edf7916e50f02be2e55a9[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 23:45:19 2022 -0400
+
+    Tabulando datos
+
+[33mcommit 8c282626028d7d5fbca4cd5e694e4ab2e67be405[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 23:32:53 2022 -0400
+
+    Ejemplo giroscopio
+
+[33mcommit a66f3733a41729a10cc8161ab8a1a5f1c199f3c0[m
+Merge: 6fa0079 3520bbc
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 22:18:43 2022 -0400
+
+    Resolviendo conflictos
+
+[33mcommit 6fa007991a85f7f271d0e79146c619c911ab0904[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 22:14:36 2022 -0400
+
+    Volviendo a master
+
+[33mcommit 3520bbcc845ad5f88d8a17a9bbee1479bed65a2b[m[33m ([m[1;31morigin/prueba1[m[33m)[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 22:08:47 2022 -0400
+
+    Comentando en la rama
+
+[33mcommit 90295226473ace51bd910401c5ad0aea01857c83[m
+Merge: 28b35c9 789a8f5
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 22:05:54 2022 -0400
+
+    Corrigiendo conflictos
+
+[33mcommit 789a8f59a5a993376574624e30035916812b251f[m
+Author: Ricardo Asin <42596840+ricardoasin@users.noreply.github.com>
+Date:   Fri May 13 22:03:09 2022 -0400
+
+    Corrigiendo -e
+
+[33mcommit 90e5aee9be79302a923b105735342a9e1ddaa968[m
+Author: Ricardo Asin <42596840+ricardoasin@users.noreply.github.com>
+Date:   Fri May 13 22:02:17 2022 -0400
+
+    Corrigiendo
+
+[33mcommit f2d3e4bc4881d1a7b57244206ef557b01b73387a[m
+Author: Ricardo Asin <42596840+ricardoasin@users.noreply.github.com>
+Date:   Fri May 13 22:02:02 2022 -0400
+
+    Corrigiendo
+
+[33mcommit 28b35c9755539ddfbc4587cb40c30f7d7a0e5e79[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Fri May 13 21:59:01 2022 -0400
+
+    Corrigiendo
+
+[33mcommit a7f9e4d806b80273bac2584ea9a1949a1cd0d993[m
+Author: Ricardo Asin <42596840+ricardoasin@users.noreply.github.com>
+Date:   Fri May 13 21:55:12 2022 -0400
+
+    Añadi un commit de prueva
+
+[33mcommit b15064bb0bb4a585ba3b2dcf77dd1245085c0340[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Thu May 12 11:28:49 2022 -0400
+
+    Generando el contenido base
+
+[33mcommit 6d67d0a185d14131336600414c65b517289bcba3[m
+Author: Ricardo Asin <ricardoasinr@gmail.com>
+Date:   Thu May 12 10:52:15 2022 -0400
+
+    Creando proyecto

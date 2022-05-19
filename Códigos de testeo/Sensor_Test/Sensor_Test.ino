@@ -1,4 +1,7 @@
 #include <basicMPU6050.h> 
+#include <EEPROM.h>
+
+int address;
 
 // Create instance
 basicMPU6050<> imu;
@@ -24,10 +27,17 @@ void loop() {
   Serial.print( imu.temp() );
   Serial.println(); 
   Serial.println( "----------------" );
-  
+   
+  EEPROM.update(address,imu.temp());
+  Serial.print(address);
+  Serial.print("\t");
+  Serial.println(imu.temp());
+  delay(2000);
  
   //-- Scaled and calibrated output:
   // Accel
+
+  /*
   Serial.println("");
   
   Serial.println ("Acelerometro:"); 
@@ -65,7 +75,7 @@ void loop() {
 
   
   
- 
+ */
   
   // Temp
   
