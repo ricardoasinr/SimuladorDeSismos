@@ -21,6 +21,10 @@ byte pinesColumnas[COLUMNAS]= {10,11,12,13};
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 char tecla;
 
+
+int intensidad;
+int tiempo;
+
 void off(){
   
   oled.clearDisplay();
@@ -34,7 +38,7 @@ void off(){
   oled.display();
 }
 
-void  menu_intensidad(){
+int  menu_intensidad(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -49,6 +53,27 @@ void  menu_intensidad(){
   oled.println("");
   oled.println("A. Volver  M=Magnitud");
   oled.display();
+  
+  tecla = teclado.getKey();
+  if (tecla){
+
+    delay(10);
+    
+      if(tecla=='1'){
+        return 5;    
+      }
+      else if(tecla=='2'){
+        return 4;
+      }
+      else if(tecla == '3'){
+
+        return 3;
+      }
+      else if(tecla== '4'){
+
+        return 4;
+      }
+    }  
 }
 
 void  menu_tiempo(){
@@ -66,6 +91,32 @@ void  menu_tiempo(){
   oled.println("");
   oled.println("A. Volver");
   oled.display();
+  
+  do{
+    
+    tecla = teclado.getKey();
+    if(tecla){
+
+    delay(10);
+    
+      if(tecla=='1'){
+        return 15;    
+      }
+      else if(tecla=='2'){
+        return 30;
+      }
+      else if(tecla == '3'){
+
+        return 45;
+      }
+      else if(tecla== '4'){
+
+        return 60;
+      }
+    }  
+  }
+  while(not tecla);
+
 }
 
 void  menu_principal(){
@@ -74,29 +125,14 @@ void  menu_principal(){
   oled.setTextColor(WHITE);
   oled.setCursor(0, 0);
   oled.setTextSize(2);
-  oled.println("---MENU---");
+  oled.println("  MODO DE OPERACIÓN");
   oled.println("");
   oled.setTextSize(1);
-  oled.println("1.  Intensidad");  
+  oled.println("1.  Bluetooth");  
   oled.println("");
-  oled.println("2.  Tiempo");
+  oled.println("2.  Manual");
   oled.println("");
   oled.display();
-}
-
-void  aviso(){
-  
-   oled.clearDisplay();
-   oled.setTextColor(WHITE);
-   oled.setCursor(0, 0);
-   oled.setTextSize(2);
-   oled.println("  AVISO!!");
-   oled.println("");
-   oled.setTextSize(1);
-   oled.println(" Tiempo e intensidad");
-   oled.println(" requerida antes de");
-   oled.println("iniciar la simulacion");
-   oled.display();
 }
 
 void sonido_M2(){
@@ -142,57 +178,31 @@ void setup() {
 }
  
 void loop() {
-  
+
   sw = digitalRead(sw1);
   
   if(sw==1){
+
+   menu_principal();
+   tecla = teclado.getKey();
     
-    menu_principal();
-    tecla=teclado.getKey();
-    
-    if (tecla){
+   if (tecla){
 
      delay(10);
     
-     while(tecla=='1'){
+     if(tecla=='1'){
 
-        
-        menu_intensidad();
-        char aux = teclado.getKey();  
-        
-        switch(aux){  
-        
-        case '1': break; 
-
-        case '2': break; 
-
-        case '3': break; 
-
-        case '4': break; 
+       // MODO BLUETOOTH
+          
       
-        case 'A': volver(); break; 
-      
-        }
       }
-    
-      while(tecla=='2'){
-
-        menu_tiempo();
-        char aux =teclado.getKey();
-
-        switch(aux){
-
-          case '1':  break;
-
-          case '2':  break;
-
-          case '3':  break;
-
-          case '4':  break;
-
-          case 'A': volver(); break;
       
-        }
+      else if(tecla=='2'){
+
+      intensidad = menu_intensidad();
+      tiempo = menu_tiempo();
+
+    
       }
     }  
   }
