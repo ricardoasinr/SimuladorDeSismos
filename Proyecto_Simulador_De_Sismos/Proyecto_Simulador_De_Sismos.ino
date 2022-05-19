@@ -80,7 +80,7 @@ int  menu_intensidad(){
     }  
 }
 
-void  menu_tiempo(){
+int  menu_tiempo(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -270,17 +270,17 @@ void loop() {
 
      delay(10);
     
-     if(tecla=='1'){
+     while(tecla=='1'){
 
        // MODO BLUETOOTH
           
       
       }
       
-      else if(tecla=='2'){
+      while(tecla=='2'){
 
       intensidad = menu_intensidad();
-      //tiempo = menu_tiempo();
+      tiempo = menu_tiempo();
 
     
       }
