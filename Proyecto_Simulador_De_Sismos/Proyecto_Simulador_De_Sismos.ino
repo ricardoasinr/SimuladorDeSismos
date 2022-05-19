@@ -29,11 +29,6 @@ char op='A';
 int estadosistema = 0;
 int menu=0;
 
-
-
-int intensidad;
-int tiempo;
-
 void off(){
   
   oled.clearDisplay();
@@ -263,9 +258,9 @@ void setup() {
  
 void loop() {
 
-<<<<<<< HEAD
-  sw = digitalRead(sw1);
-  
+
+  //sw = digitalRead(sw1);
+  sw=1;
   if(sw==1){
 
    menu_principal();
@@ -285,7 +280,7 @@ void loop() {
       else if(tecla=='2'){
 
       intensidad = menu_intensidad();
-      tiempo = menu_tiempo();
+      //tiempo = menu_tiempo();
 
     
       }
