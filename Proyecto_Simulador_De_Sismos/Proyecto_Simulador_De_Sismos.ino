@@ -57,27 +57,15 @@ int  menu_intensidad(){
   oled.println("");
   oled.println("A. Volver  M=Magnitud");
   oled.display();
-  
-  tecla = teclado.getKey();
-  if (tecla){
 
-    delay(10);
+  tecla = teclado.getKey(); 
+  switch(tecla){
     
-      if(tecla=='1'){
-        return 5;    
-      }
-      else if(tecla=='2'){
-        return 4;
-      }
-      else if(tecla == '3'){
+     case '1': return 5; 
+     case '2': return 4; 
+     case '3': return 3; 
+     case '4': return 2; 
 
-        return 3;
-      }
-      else if(tecla== '4'){
-
-        return 4;
-      }
-    }  
 }
 
 int  menu_tiempo(){
