@@ -13,7 +13,8 @@ int sw;
 int tiempo = 0;
 int intensidad= 0;
 int temperatura= 30;
-
+int menuop=0;
+int menu = 0;
 const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
@@ -42,7 +43,7 @@ void off(){
   oled.display();
 }
 
-void  menu_intensidad(){
+void  menuIntensidad(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -61,7 +62,7 @@ void  menu_intensidad(){
 
 }
 
-void  menu_tiempo(){
+void  menuTiempo(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -78,7 +79,6 @@ void  menu_tiempo(){
   oled.display();
 
 }
-
 
 int seleccion_intensidad(char aux){
 
@@ -99,15 +99,13 @@ int seleccion_intensidad(char aux){
   
 }
 
-
-
-void  menu_principal(){
+void  menuPrincipal(){
 
   oled.clearDisplay();
   oled.setTextColor(WHITE);
-  oled.setCursor(0, 0);
+  oled.setCursor(30,0);
   oled.setTextSize(2);
-  oled.println("  MODO DE OPERACIÓN");
+  oled.println("Menu");
   oled.println("");
   oled.setTextSize(1);
   oled.println("1.  Bluetooth");  
@@ -235,54 +233,112 @@ void setup() {
 }
  
 void loop() {
-
-
   //sw = digitalRead(sw1);
   sw=1;
+switch(tecla)
+  {
+    //Menu Bluetooth
+    case '1': 
+      op='1';
+      tone(buzzer_pin, 1700);
+      delay(200);
+      noTone(buzzer_pin);
+    break;
+    //Menu manual
+    case '2':
+      op='2';
+      tone(buzzer_pin, 1700);
+      delay(200);
+      noTone(buzzer_pin);
+    break;
+
+    case 'A':
+      op='A';
+      tone(buzzer_pin, 1700);
+      delay(200);
+      noTone(buzzer_pin);
+    break;
+
+
+   }
+
   if(sw==1){
 
-   menu_principal();
-   tecla = teclado.getKey();
-    
-   if (tecla){
+    if (menu==0){
+      switch (op)
+     {
+      case 'A':
+        menuPrincipal();
+        break;
+        
+      case '1':
+        menuIntensidad();
+        menu=1;
+        break;
 
-     delay(10);
-    
-     while(tecla=='1'){
+      case '2':
+      menuTimepo();
+        menu=2;
+        break;
+  
+      default: 
+        break;      
+    }
+}
 
-       // MODO BLUETOOTH
-          
+  if (menu==1){
+   switch(op)
+    {
+      case '1':
+        intensidad=1;
+      break;
+      case '2':
+        intensidad=2;
+      break;
+      case '3':
+        intensidad=3;
+      break;
+      case '4':
+        intensidad=4;
+      break;
       
-      }
+      default: 
+        break;  
+    }
+    }
+
+if (menu==2){
+   switch(op)
+    {
+      case '1':
+        tiempo=1;
+      break;
+      case '2':
+        tiempo=2;
+      break;
+      case '3':
+        tiempo=3;
+      break;
+      case '4':
+        tiempo=4;
+      break;
       
-      while(tecla=='2'){
+      default: 
+        break;  
+    }
+    }
 
-          menu_intensidad();
-          while(intensidad == 0){
-          
-            char aux = teclado.getKey();
-            delay(1000);
-            intensidad = seleccion_intensidad(aux);
-            //Serial.println(intensidad);
-          }
-          //Serial.println(intensidad);
-      
 
-      
 
-          menu_tiempo();
-     
 
-    
-      }
-    }  
+
+   
+
   }
   
- else{
-    
-    off();
-    
-  }
+ else{off();}
+
+
 }
 
 
