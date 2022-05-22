@@ -8,13 +8,6 @@
 #define buzzer_pin 4
 
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
-
-int sw;
-int tiempo = 0;
-int intensidad= 0;
-int temperatura= 30;
-int menuop=0;
-int menu = 0;
 const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= { 
@@ -28,7 +21,13 @@ Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLU
 char tecla;
 char op='A';
 int estadosistema = 0;
-int menu=0;
+int sw;
+int tiempo = 0;
+int intensidad= 0;
+int temperatura= 0;
+int menuop=0;
+int menu = 0;
+int intensidadFinal = 0;
 
 void off(){
   
@@ -43,6 +42,7 @@ void off(){
   oled.display();
 }
 
+
 void  menuIntensidad(){
   
   oled.clearDisplay();
@@ -56,13 +56,34 @@ void  menuIntensidad(){
   oled.println("");
   oled.println("2. (M3,5)   4.(M7)");
   oled.println("");
-  oled.println("A. Volver  M=Magnitud");
+  oled.print("A. Volver  M=Magnitud ");
   oled.display();
 
 
 }
 
-void  menuTiempo(){
+void  menuIntensidadPar(int intensidad){
+  
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(5, 0);
+  oled.setTextSize(2);
+  oled.println("INTENSIDAD");
+  oled.setTextSize(1);
+  oled.println("");
+  oled.println("1. (M2)     3.(M5)");
+  oled.println("");
+  oled.println("2. (M3,5)   4.(M7)");
+  oled.println("");
+  oled.print("A. Volver  M=[");
+  oled.print(intensidad);
+  oled.println("]");
+  oled.display();
+
+
+}
+
+void  menuTiempoPar(int tiempo){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
@@ -75,7 +96,9 @@ void  menuTiempo(){
   oled.println("");
   oled.println("2. 30s     4. 1min");
   oled.println("");
-  oled.println("A. Volver");
+  oled.print("A. Volver  T=[");
+  oled.print(tiempo);
+  oled.println("]");
   oled.display();
 
 }
@@ -103,14 +126,14 @@ void  menuPrincipal(){
 
   oled.clearDisplay();
   oled.setTextColor(WHITE);
-  oled.setCursor(30,0);
+  oled.setCursor(40,0);
   oled.setTextSize(2);
   oled.println("Menu");
-  oled.println("");
   oled.setTextSize(1);
   oled.println("1.  Bluetooth");  
-  oled.println("");
-  oled.println("2.  Manual");
+  oled.println("2.  Intensidad");
+  oled.println("3.  Tiempo");
+  oled.println("4.  Verificar");
   oled.println("");
   oled.display();
 }
@@ -206,6 +229,10 @@ void datosAlmacenados(int tiempo, int intensidad){
   oled.setCursor(10, 10);    
   oled.setTextSize(2);    
   oled.println("  Datos   guardados");
+  oled.print("Intensidad: ");
+  oled.println(intensidad);
+  oled.print("Tiempo: ");
+  oled.println(tiempo);
   oled.display();
     
   }
@@ -225,7 +252,7 @@ void datosAlmacenados(int tiempo, int intensidad){
 
 void setup() { 
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   Wire.begin();        
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); 
   oled.clearDisplay();
@@ -233,7 +260,26 @@ void setup() {
 }
  
 void loop() {
+  if(intensidad>1)
+  {
+    digitalWrite(5, HIGH);
+    //menuIntensidadPar(intensidad);
+    op='B';
+    
+  }
+  if(tiempo>1){
+    digitalWrite(4, HIGH);
+  }
+  
+  op=0;
+
   //sw = digitalRead(sw1);
+  tecla= teclado.getKey();
+  if(tecla){
+    Serial.println(tecla);
+  }
+  //Serial.print("Intensidad: ");
+  //Serial.println(intensidad);
   sw=1;
 switch(tecla)
   {
@@ -251,6 +297,18 @@ switch(tecla)
       delay(200);
       noTone(buzzer_pin);
     break;
+    case '3':
+       op='3';
+       tone(buzzer_pin, 1700);
+       delay(200);
+        noTone(buzzer_pin);
+      break;
+     case '4':
+       op='4';
+       tone(buzzer_pin, 1700);
+       delay(200);
+        noTone(buzzer_pin);
+      break;
 
     case 'A':
       op='A';
@@ -258,8 +316,12 @@ switch(tecla)
       delay(200);
       noTone(buzzer_pin);
     break;
-
-
+      case 'B':
+      op='B';
+      tone(buzzer_pin, 1700);
+      delay(200);
+      noTone(buzzer_pin);
+    break;
    }
 
   if(sw==1){
@@ -271,40 +333,51 @@ switch(tecla)
         menuPrincipal();
         break;
         
-      case '1':
-        menuIntensidad();
+      case '2':
+        menuIntensidadPar(intensidad);
         menu=1;
         break;
 
-      case '2':
-      menuTimepo();
-        menu=2;
+      case '3':
+      if(intensidad>0){
+          menuTiempoPar(tiempo);
+        menu=2;}
         break;
-  
       default: 
         break;      
     }
 }
 
   if (menu==1){
+      if(tecla){
    switch(op)
     {
       case '1':
         intensidad=1;
+        op=3;
       break;
       case '2':
         intensidad=2;
+        op=3;
       break;
       case '3':
         intensidad=3;
+        menu = 0;
+        
       break;
       case '4':
         intensidad=4;
       break;
+      case 'A':
+        menu=0;
+      break;
       
-      default: 
+      default:
         break;  
     }
+  }
+     
+    
     }
 
 if (menu==2){
@@ -322,6 +395,9 @@ if (menu==2){
       case '4':
         tiempo=4;
       break;
+      case 'A':
+        menu=0;
+      break;
       
       default: 
         break;  
@@ -332,12 +408,13 @@ if (menu==2){
 
 
 
-   
 
   }
   
  else{off();}
 
+ 
+  
 
 }
 
