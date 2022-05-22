@@ -1,3 +1,7 @@
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_I2CRegister.h>
+#include <Adafruit_SPIDevice.h>
+
 #include <Adafruit_GFX.h>   // libreria para pantallas graficas
 #include <Adafruit_SSD1306.h>   // libreria para controlador SSD1306 
 #define ANCHO 128     // reemplaza ocurrencia de ANCHO por 128
@@ -5,50 +9,42 @@
 #define OLED_RESET 4      // necesario por la libreria pero no usado
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);  // crea objeto
 
-bool correr;
-int velocidad=0;
-int ledrojo_pin = 8;
-int ledamarillo_pin = 7;
-int ledverde_pin = 6;
-int buzzer_pin= 2;
-int IN1_pin = 4;      // IN1_pin de L298N a pin digital 2
-int IN2_pin = 3;      // IN2_pin de L298N a pin digital 3
-int ENA_pin = 5;      // ENA_pin de L298N a pin digital 5
-int sw;
-#define sw1 A0
-
 #include <Keypad.h> // importa o incluye la libreria Keypad
-const byte FILAS=1;
+const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= 
 {    
   {'1','2', '3', 'A'},
+  {'4','5', '6', 'B'}
 };
-byte pinesFilas[FILAS]= {13};
-byte pinesColumnas[COLUMNAS]= {12,11,10,9};
+byte pinesFilas[FILAS]= {8,9};
+byte pinesColumnas[COLUMNAS]= {10,11,12,13};
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 char tecla;
+char aux;
+char sub_aux;
 
+int sw;
+#define sw1 7
+
+int intensidad = 0;
+int duracion = 0;
 
 
 // AREA DE SUBPROGRAMAS PARA MEL MENU
 
 
-
 void menu_inicial(){
 
-    digitalWrite(ledverde_pin, HIGH);
-    oled.clearDisplay();
-    oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
-    oled.setCursor(0, 0);     // ubica cursor en inicio de coordenadas 0,0
-    oled.setTextSize(1);      // establece tamano de texto en 1
-    oled.print("1. Estado");
-    oled.setCursor(0, 15);
-    oled.print("2. Velocidad");
-    oled.setCursor(0, 30);
-    oled.print("3. Sentido de giro");
-    oled.display(); 
-    
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(32,0);
+  oled.setTextSize(1);
+  oled.println("Menu inicial");
+  oled.println("\nModos de manejo: ");
+  oled.println("\n1.  Bluetooth");  
+  oled.println("\n2.  Manual");
+  oled.display();
 }
 
 void menu_apagado(){
@@ -59,157 +55,121 @@ void menu_apagado(){
   oled.setTextSize(1);      
   oled.print("Sistema: Apagado");
   oled.display();
-  digitalWrite(ledrojo_pin, LOW);
-  digitalWrite(ledamarillo_pin, LOW);
-  digitalWrite(ledverde_pin, LOW);
-  analogWrite(ENA_pin, LOW);
+}
+
+void menu_bt(){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(0,0);
+  oled.setTextSize(1);
+  oled.print("- Manejo Bluetooth -");
+  oled.setCursor(0,25);
+  oled.print("[ Ingrese comandos ]");
+  oled.setCursor(0,35);
+  oled.print("[       de voz     ]");
+  oled.setCursor(0,56);
+  oled.print("A.  Volver");
+  oled.display();   
+}
+
+void menu_manual(){
   
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(1);
+  oled.println("-- Manejo manual --");
+  oled.setTextSize(1);
+  oled.setCursor(0,14);
+  oled.print("1.  Intensidad");
+  oled.setCursor(0,24);
+  oled.print("2.  Duracion");
+  oled.setCursor(0,34);
+  oled.print("3.  Parametros");
+  oled.setCursor(0,44);
+  oled.print("B.  Simular");
+  oled.setCursor(0,54);
+  oled.print("A.  Volver");
+  oled.display();
+}
+
+void menu_intensidad(){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(1);
+  oled.print("    Intensidad");
+  oled.setCursor(0, 20);
+  oled.print("1. M2      3. M5");
+  oled.setCursor(0, 32);
+  oled.print("2. M3,5    4. M7");
+  oled.setCursor(0, 56);
+  oled.print("A. Volver");
+  oled.display();
+}
+
+void  menu_duracion(){
+  
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(1);
+  oled.print("    Duracion");
+  oled.setCursor(0, 20);
+  oled.print("1. 15s      3. 45s");
+  oled.setCursor(0, 38);
+  oled.print("2. 30s      4. 60s");
+  oled.setCursor(0, 56);
+  oled.print("A. Volver");
+  oled.display();
+}
+
+void muestra_parametros(int intensidad, int duracion){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(6, 0);
+  oled.setTextSize(1);
+  oled.print("Parametros de sismo");
+  oled.setCursor(0, 26);
+  
+  if(intensidad == 0 && duracion == 0){
+    
+    oled.print("Intensidad: N/A");
+    oled.setCursor(0, 40);
+    oled.print("Duracion: N/A");
+  }
+  else if(intensidad == 0 && duracion != 0){
+
+    oled.print("Intensidad: "); oled.print(intensidad);
+    oled.setCursor(0, 40);
+    oled.print("Duración: N/A");
+  }
+  else if(intensidad != 0 && duracion == 0){
+
+    oled.print("Intensidad: N/A");
+    oled.setCursor(0, 40);
+    oled.print("Duración: "); oled.print(duracion);
+  }
+  else{
+    oled.print("Intensidad: "); oled.print(intensidad);
+    oled.setCursor(0, 40);
+    oled.print("Duracion: "); oled.print(duracion);
+  }
+  oled.setCursor(0, 56);
+  oled.print("A.  Vovler");
+  oled.display();
 }
 
 void volver(){
-
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-  tecla='X';
-  
+  tecla='X'; 
 }
 
-void sonido(){
-
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-  
+void volver_sub(){
+  aux='X';
 }
-
-void menu_1(){
-
-    oled.clearDisplay();
-    oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
-    oled.setCursor(0, 0);     // ubica cursor en inicio de coordenadas 0,0
-    oled.setTextSize(1);      // establece tamano de texto en 1
-    oled.print("1. Marcha");
-    oled.setCursor(0, 15);
-    oled.print("2. Parada");
-    oled.setCursor(0, 30);
-    oled.print("A. Volver");
-    oled.display(); 
-    
-}
-
-bool marcha(int velocidad){
-
-  digitalWrite(ledrojo_pin, HIGH);
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin); 
-  if(velocidad==0){
-    analogWrite(ENA_pin, 77);
-  }
-  else{
-    analogWrite(ENA_pin, velocidad);
-  }
-  return true;
-}
-
-bool parada(){
-
-  digitalWrite(ledrojo_pin, LOW);
-  analogWrite(ENA_pin, 0);
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-  return false;
-    
-}
-
-void menu_2(){
-
-    oled.clearDisplay();
-    oled.setTextColor(WHITE);   
-    oled.setCursor(0, 0);     
-    oled.setTextSize(1);      
-    oled.print("1. 30%");
-    oled.setCursor(0, 15);
-    oled.print("2. 60%");
-    oled.setCursor(0, 30);
-    oled.print("3. 100%");
-    oled.setCursor(0, 45);
-    oled.print("A. Volver");
-    oled.display(); 
-  
-}
-
-int vel_1(bool correr){
-
-  velocidad = 77;
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-  if(correr==true){
-    analogWrite(ENA_pin, 77);
-  }
-  return velocidad;
-  
-}
-
-int vel_2(bool correr){
-
-  velocidad=156;
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin); 
-  if(correr==true){
-    analogWrite(ENA_pin, 156);
-  }
-  return velocidad;
-  
-}
-
-int vel_3(bool correr){
-
-  velocidad = 255;
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-  if(correr==true){
-    analogWrite(ENA_pin, 255);
-  }
-  return velocidad;
-}
-
-void menu_3(){
-
-    oled.clearDisplay();
-    oled.setTextColor(WHITE);   
-    oled.setCursor(0, 0);     
-    oled.setTextSize(1);      
-    oled.print("1. Izquierda");
-    oled.setCursor(0, 15);
-    oled.print("2. Derecha");
-    oled.setCursor(0, 30);
-    oled.print("A. Volver");
-    oled.display(); 
-  
-}
-
-void izq(){
-
-    sonido();
-    digitalWrite(ledamarillo_pin, LOW);
-    digitalWrite(IN1_pin, HIGH);        
-    digitalWrite(IN2_pin, LOW);
-}
-
-void der(){
-
-    sonido();
-    digitalWrite(ledamarillo_pin, HIGH);
-    digitalWrite(IN1_pin, LOW);        
-    digitalWrite(IN2_pin, HIGH);
-}
-
 
 void setup() { 
   
@@ -218,13 +178,6 @@ void setup() {
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); // inicializa pantalla con direccion 0x3C
   oled.clearDisplay();
   oled.display();
-  pinMode(ledrojo_pin, OUTPUT);
-  pinMode(ledamarillo_pin, OUTPUT);
-  pinMode(ledverde_pin, OUTPUT);
-  pinMode(buzzer_pin, OUTPUT);
-  pinMode(IN1_pin, OUTPUT);
-  pinMode(IN2_pin, OUTPUT);
-  pinMode(ENA_pin, OUTPUT);
 
 }
  
@@ -235,73 +188,94 @@ void loop() {
   sw = digitalRead(sw1);
   
   if(sw==1){
-    
+
     menu_inicial();
-    tecla= teclado.getKey();
-    
-    if (tecla){
+    tecla = teclado.getKey();
 
-     sonido();
-     delay(10);
-    
-     while(tecla=='1'){
+//  @ MENU MANEJO BLUETOOTH @  //////
+   
+    while(tecla=='1'){
 
-        
-        menu_1();
-        char aux = teclado.getKey();  
-        
-        switch(aux){  
-        
-        case '1': correr = marcha(velocidad); break; 
-
-        case '2': correr = parada(); break; 
-      
-        case 'A': volver(); break; 
-      
-        }
-      }
-    
-      while(tecla=='2'){
-
-        menu_2();
-        char aux =teclado.getKey();
-
-        switch(aux){
-
-          case '1': velocidad = vel_1(correr); break;
-
-          case '2': velocidad = vel_2(correr); break;
-
-          case '3': velocidad = vel_3(correr); break;
-
-          case 'A': volver(); break;
-      
-        }
-      }
-
-      while(tecla=='3'){
-
-        
-        menu_3();
-        char aux =teclado.getKey();
-
-        switch(aux){
-
-          case '1': izq(); break;
-
-          case '2': der(); break;
-      
-          case 'A': volver(); break;
-        
-        }
-      }
+       //menu_bt();
+       aux = teclado.getKey();
+       
+       if(aux=='A'){
+        volver();
+       }
     }
+
+//  @ MENU MANEJO MANUAL @  //////
+
+
+    while(tecla=='2'){
+
+       menu_manual();
+       aux = teclado.getKey();
+        
+        
+        
+ ///// ZONA DE SUBMENUS DE MANEJO MANUAL ////////       
+        
+        
+        while(aux=='1'){
+
+          //menu_intensidad();
+          sub_aux = teclado.getKey();
+
+          switch(sub_aux){
+
+              case '1' : break;
+              case '2' : break;
+              case '3' : break;
+              case '4' : break;
+              case 'A' : volver_sub(); break;
+          }
+        
+      }
       
+      while(aux=='2'){
+           
+          //menu_duracion();
+          sub_aux = teclado.getKey();
+
+          switch(sub_aux){
+
+              case '1' : break;
+              case '2' : break;
+              case '3' : break;
+              case '4' : break;
+              case 'A' : volver_sub(); break;
+          }      
+      }
+
+      while(aux=='3'){
+
+          muestra_parametros(intensidad, duracion);
+          sub_aux = teclado.getKey();
+
+          if(sub_aux=='A'){
+
+            volver_sub();
+          } 
+      }
+      
+      while(aux=='B'){
+
+        // falta subprograma para inicializacion del sismo
+
+        
+      }
+      
+      if(aux=='A'){
+
+        volver();
+      }       
+    } 
   }
   
- else{
+   else{
     
-    menu_apagado();
+    //menu_apagado();
     
   }
 }
