@@ -322,6 +322,8 @@ switch(tecla)
       delay(200);
       noTone(buzzer_pin);
     break;
+
+
    }
 
   if(sw==1){
@@ -343,6 +345,12 @@ switch(tecla)
           menuTiempoPar(tiempo);
         menu=2;}
         break;
+        
+     case '4':
+      datosAlmacenados(tiempo,intensidad);
+      menu=2;
+      break;
+      
       default: 
         break;      
     }
