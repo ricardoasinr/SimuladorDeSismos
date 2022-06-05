@@ -6,7 +6,7 @@
 #include <Adafruit_SSD1306.h>   // libreria para controlador SSD1306 
 #define ANCHO 128     // reemplaza ocurrencia de ANCHO por 128
 #define ALTO 64       // reemplaza ocurrencia de ALTO por 64
-#define OLED_RESET 4      // necesario por la libreria pero no usado
+#define OLED_RESET 20      // necesario por la libreria pero no usado
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);  // crea objeto
 
 #include <Keypad.h> // importa o incluye la libreria Keypad
@@ -23,12 +23,15 @@ Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLU
 char tecla;
 char aux;
 char sub_aux;
+int seleccion_duraccion(char sub_aux);
 
 int sw;
 #define sw1 7
 
 int intensidad = 0;
 int duracion = 0;
+
+float val_intensidad = 0;
 
 
 // AREA DE SUBPROGRAMAS PARA MEL MENU
@@ -103,7 +106,7 @@ void menu_intensidad(){
   oled.print("    Intensidad");
   oled.setCursor(0, 20);
   oled.print("1. M2      3. M5");
-  oled.setCursor(0, 32);
+  oled.setCursor(0, 34);
   oled.print("2. M3,5    4. M7");
   oled.setCursor(0, 56);
   oled.print("A. Volver");
@@ -126,40 +129,40 @@ void  menu_duracion(){
   oled.display();
 }
 
-void muestra_parametros(int intensidad, int duracion){
+void muestra_parametros(int val_intesidad, int duracion){
 
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(6, 0);
   oled.setTextSize(1);
   oled.print("Parametros de sismo");
-  oled.setCursor(0, 26);
+  oled.setCursor(0, 22);
   
-  if(intensidad == 0 && duracion == 0){
+  if(val_intensidad == 0 && duracion == 0){
     
     oled.print("Intensidad: N/A");
-    oled.setCursor(0, 40);
+    oled.setCursor(0, 38);
     oled.print("Duracion: N/A");
   }
-  else if(intensidad == 0 && duracion != 0){
+  else if(val_intensidad != 0 && duracion == 0){
 
-    oled.print("Intensidad: "); oled.print(intensidad);
-    oled.setCursor(0, 40);
-    oled.print("Duración: N/A");
+    oled.print("Intensidad: "); oled.print("M "); oled.print(val_intensidad);
+    oled.setCursor(0, 38);
+    oled.print("Duracion: N/A");
   }
-  else if(intensidad != 0 && duracion == 0){
-
+  else if(val_intensidad == 0 && duracion != 0){
+   
     oled.print("Intensidad: N/A");
-    oled.setCursor(0, 40);
-    oled.print("Duración: "); oled.print(duracion);
+    oled.setCursor(0, 38);
+    oled.print("Duracion: "); oled.print(duracion); oled.print('s');
   }
   else{
-    oled.print("Intensidad: "); oled.print(intensidad);
-    oled.setCursor(0, 40);
-    oled.print("Duracion: "); oled.print(duracion);
+    oled.print("Intensidad: "); oled.print("M "); oled.print(val_intensidad);
+    oled.setCursor(0, 38);
+    oled.print("Duracion: "); oled.print(duracion); oled.print('s');
   }
   oled.setCursor(0, 56);
-  oled.print("A.  Vovler");
+  oled.print("A.  Volver");
   oled.display();
 }
 
@@ -170,6 +173,8 @@ void volver(){
 void volver_sub(){
   aux='X';
 }
+
+
 
 void setup() { 
   
@@ -196,7 +201,7 @@ void loop() {
    
     while(tecla=='1'){
 
-       //menu_bt();
+       menu_bt();
        aux = teclado.getKey();
        
        if(aux=='A'){
@@ -219,15 +224,15 @@ void loop() {
         
         while(aux=='1'){
 
-          //menu_intensidad();
+          menu_intensidad();
           sub_aux = teclado.getKey();
 
           switch(sub_aux){
 
-              case '1' : break;
-              case '2' : break;
-              case '3' : break;
-              case '4' : break;
+              case '1' : intensidad = 5; val_intensidad = 2; break;
+              case '2' : intensidad = 4; val_intensidad = 3.5; break;
+              case '3' : intensidad = 3; val_intensidad = 5; break;
+              case '4' : intensidad = 1; val_intensidad = 7; break;
               case 'A' : volver_sub(); break;
           }
         
@@ -235,22 +240,22 @@ void loop() {
       
       while(aux=='2'){
            
-          //menu_duracion();
+          menu_duracion();
           sub_aux = teclado.getKey();
 
           switch(sub_aux){
 
-              case '1' : break;
-              case '2' : break;
-              case '3' : break;
-              case '4' : break;
+              case '1' : duracion = 15; break;
+              case '2' : duracion = 30; break;
+              case '3' : duracion = 45; break;
+              case '4' : duracion = 60; break;
               case 'A' : volver_sub(); break;
           }      
       }
 
       while(aux=='3'){
 
-          muestra_parametros(intensidad, duracion);
+          muestra_parametros(val_intensidad, duracion);
           sub_aux = teclado.getKey();
 
           if(sub_aux=='A'){
@@ -262,8 +267,12 @@ void loop() {
       while(aux=='B'){
 
         // falta subprograma para inicializacion del sismo
+          sub_aux = teclado.getKey();
+          if(sub_aux=='A'){
+  
+              volver_sub();
 
-        
+          }
       }
       
       if(aux=='A'){
@@ -275,7 +284,7 @@ void loop() {
   
    else{
     
-    //menu_apagado();
+    menu_apagado();
     
   }
 }
