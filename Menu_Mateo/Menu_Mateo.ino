@@ -1,18 +1,22 @@
 #include <Adafruit_I2CDevice.h>
 #include <Adafruit_I2CRegister.h>
 #include <Adafruit_SPIDevice.h>
+#include <Adafruit_GFX.h> 
+#include <Adafruit_SSD1306.h> 
+#include <Keypad.h> 
 #include <Servo.h>
+#include <EEPROM.h>
+#include <Wire.h>    
+
+#define ANCHO 128 
+#define ALTO 64      
+#define OLED_RESET 20 
+#define sw1 7 
+
+Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);
 Servo servo1;
 Servo servo2;
-
-#include <Adafruit_GFX.h>   // libreria para pantallas graficas
-#include <Adafruit_SSD1306.h>   // libreria para controlador SSD1306 
-#define ANCHO 128     // reemplaza ocurrencia de ANCHO por 128
-#define ALTO 64       // reemplaza ocurrencia de ALTO por 64
-#define OLED_RESET 20      // necesario por la libreria pero no usado
-Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);  // crea objeto
-
-#include <Keypad.h> // importa o incluye la libreria Keypad
+Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 const byte FILAS=2;
 const byte COLUMNAS=4;
 char keys[FILAS][COLUMNAS]= 
@@ -22,24 +26,22 @@ char keys[FILAS][COLUMNAS]=
 };
 byte pinesFilas[FILAS]= {8,9};
 byte pinesColumnas[COLUMNAS]= {10,11,12,13};
-Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
+
 char tecla;
 char aux;
-
+char x;
 int sw;
-#define sw1 7
-
 int buzzer_pin= 2;
-
 int intensidad = 0;
 int duracion = 0;
+int address; 
+int limite=5; //Cantidad de datos para almacenar en la EEPROM
 unsigned int fin=0;
 unsigned int t=0;
 unsigned int factor = 0;
 float val_intensidad = 0;
-
 String s; 
-char x;
+
 
 
 // AREA DE SUBPROGRAMAS PARA MEL MENU
@@ -189,19 +191,26 @@ int factor_tiempo(int intensidad){
 }
 
 void setup() { 
-  
+
+  Wire.begin();   
   Serial.begin(9600);
-  Wire.begin();         // inicializa bus I2C
-  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); // inicializa pantalla con direccion 0x3C
+  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); 
   oled.clearDisplay();
   oled.display();
   servo1.attach(5); servo2.attach(6);
   pinMode(4, OUTPUT);
+
+  Serial.print ("Tamano EEPROM:");
+  Serial.println(EEPROM.length());
   }
  
 void loop() {
 
-  //Serial.println(sw);
+
+  //Estructura EEPROM
+  //EEPROM.update(address,VALOR); //Registra
+  // VARIABLE = EEPROM.read(address); //LEE
+  
   sw = digitalRead(sw1);
   
   if(sw==0){
