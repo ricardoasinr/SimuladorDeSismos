@@ -3,6 +3,7 @@
 #include <Adafruit_SPIDevice.h>
 #include <Adafruit_GFX.h> 
 #include <Adafruit_SSD1306.h> 
+#include <RTClib.h> 
 #include <Keypad.h> 
 #include <Servo.h>
 #include <EEPROM.h>
@@ -16,6 +17,7 @@
 Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);
 Servo servo1;
 Servo servo2;
+RTC_DS3231 rtc; 
 Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 const byte FILAS=2;
 const byte COLUMNAS=4;
@@ -127,6 +129,9 @@ void muestra_parametros(int val_intesidad, int duracion){
   oled.setTextSize(1);
   oled.print("Parametros de sismo");
   oled.setCursor(0, 22);
+
+  intensidadEP = EEPROM.read(1);
+  tiempoEP = EEPROM.read(2);
   
   if(val_intensidad == 0 && duracion == 0){
     
@@ -136,7 +141,7 @@ void muestra_parametros(int val_intesidad, int duracion){
   }
   else if(val_intensidad != 0 && duracion == 0){
 
-    oled.print("Intensidad: "); oled.print("M "); oled.print(val_intensidad);
+    oled.print("Intensidad: "); oled.print("M "); oled.print(intensidadEP);
     oled.setCursor(0, 38);
     oled.print("Duracion: N/A");
   }
@@ -144,12 +149,12 @@ void muestra_parametros(int val_intesidad, int duracion){
    
     oled.print("Intensidad: N/A");
     oled.setCursor(0, 38);
-    oled.print("Duracion: "); oled.print(duracion); oled.print('s');
+    oled.print("Duracion: "); oled.print(tiempoEP); oled.print('s');
   }
   else{
-    oled.print("Intensidad: "); oled.print("M "); oled.print(val_intensidad);
+    oled.print("Intensidad: "); oled.print("M "); oled.print(intensidadEP);
     oled.setCursor(0, 38);
-    oled.print("Duracion: "); oled.print(duracion); oled.print('s');
+    oled.print("Duracion: "); oled.print(tiempoEP); oled.print('s');
   }
   oled.setCursor(0, 56);
   oled.print("A.  Volver");
@@ -202,15 +207,22 @@ void setup() {
 
   Serial.print ("Tamano EEPROM:");
   Serial.println(EEPROM.length());
+
+
+   if (! rtc.begin()) {       // si falla la inicializacion del modulo
+      Serial.println("Modulo RTC no encontrado !");  // muestra mensaje de error
+       while (1);         // bucle infinito que detiene ejecucion del programa
+    }
+ rtc.adjust(DateTime(__DATE__, __TIME__));
+}
   }
  
 void loop() {
 
 
   //Estructura EEPROM
-  //EEPROM.update(address,VALOR); //Registra
-  // VARIABLE = EEPROM.read(address); //LEE
-  
+  DateTime fecha = rtc.now();
+
   sw = digitalRead(sw1);
   
   if(sw==0){
@@ -299,6 +311,9 @@ void loop() {
             intensidad = 4; 
             duracion = 15;
             fin=duracion*160;
+              EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
             sismo_en_curso();
             factor = factor_tiempo(intensidad);
             while(t  <=  fin){
@@ -313,6 +328,9 @@ void loop() {
            intensidad = 3; 
            duracion = 15;
            fin=duracion*160;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
            sismo_en_curso();
            factor = factor_tiempo(intensidad);
            while(t  <=  fin){
@@ -324,9 +342,13 @@ void loop() {
          }
          
          if(s=="modo 3"){
+          
            intensidad = 2; 
            duracion = 15;
            fin=duracion*160;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
            sismo_en_curso();
            factor = factor_tiempo(intensidad);
            while(t  <=  fin){
@@ -342,6 +364,9 @@ void loop() {
            intensidad = 1; 
            duracion = 30;
            fin=duracion*166;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
            sismo_en_curso();
            factor = factor_tiempo(intensidad);
            while(t  <=  fin){

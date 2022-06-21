@@ -1,442 +1,382 @@
-#include <Adafruit_GFX.h>  
+#include <Adafruit_I2CDevice.h>
+#include <Adafruit_I2CRegister.h>
+#include <Adafruit_SPIDevice.h>
+#include <Adafruit_GFX.h> 
 #include <Adafruit_SSD1306.h> 
+#include <RTClib.h> 
 #include <Keypad.h> 
-#define ANCHO 128 
-#define ALTO 64    
-#define OLED_RESET 4  
-#define sw1 A0
-#define buzzer_pin 4
+#include <Servo.h>
+#include <EEPROM.h>
+#include <Wire.h>    
 
-Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET); 
+#define ANCHO 128 
+#define ALTO 64      
+#define OLED_RESET 20 
+#define sw1 7 
+
+Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);
+Servo servo1;
+Servo servo2;
+RTC_DS3231 rtc; 
+Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 const byte FILAS=2;
 const byte COLUMNAS=4;
-char keys[FILAS][COLUMNAS]= { 
-  {'1','2','3','A'},
-  {'4','5','6','B'}
+char keys[FILAS][COLUMNAS]= 
+{    
+  {'1','2', '3', 'A'},
+  {'4','5', '6', 'B'}
 };
-byte pinesFilas[FILAS]= {10,11};
-byte pinesColumnas[COLUMNAS]= {9,8,7,6};
-Keypad teclado = Keypad(makeKeymap(keys), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
+byte pinesFilas[FILAS]= {8,9};
+byte pinesColumnas[COLUMNAS]= {10,11,12,13};
 
 char tecla;
-char op='A';
-int estadosistema = 0;
+char aux;
+char x;
 int sw;
-int tiempo = 0;
-int intensidad= 0;
-int temperatura= 0;
-int menuop=0;
-int menu = 0;
-int intensidadFinal = 0;
+int buzzer_pin= 2;
+int intensidad = 0;
+int duracion = 0;
+int address; 
+int limite=5; //Cantidad de datos para almacenar en la EEPROM
+unsigned int fin=0;
+unsigned int t=0;
+unsigned int factor = 0;
+float val_intensidad = 0;
+String s; 
 
-void off(){
-  
+
+
+// AREA DE SUBPROGRAMAS PARA MEL MENU
+
+void menu_bt(){
+
   oled.clearDisplay();
   oled.setTextColor(WHITE);
-  oled.setCursor(25, 15);
-  oled.setTextSize(2);
-  oled.print("Sistema");
-  oled.setCursor(25, 35);
-  oled.setTextSize(2);
-  oled.print("Apagado");
-  oled.display();
-}
-
-
-void  menuIntensidad(){
-  
-  oled.clearDisplay();
-  oled.setTextColor(WHITE);
-  oled.setCursor(5, 0);
-  oled.setTextSize(2);
-  oled.println("INTENSIDAD");
+  oled.setCursor(0,0);
   oled.setTextSize(1);
-  oled.println("");
-  oled.println("1. (M2)     3.(M5)");
-  oled.println("");
-  oled.println("2. (M3,5)   4.(M7)");
-  oled.println("");
-  oled.print("A. Volver  M=Magnitud ");
-  oled.display();
-
-
+  oled.print("- Manejo Bluetooth -");
+  oled.setCursor(0,25);
+  oled.print("[ Ingrese comandos ]");
+  oled.setCursor(0,35);
+  oled.print("[       de voz     ]");
+  oled.display();   
 }
 
-void  menuIntensidadPar(int intensidad){
+void menu_manual(){
   
   oled.clearDisplay();
   oled.setTextColor(WHITE);
-  oled.setCursor(5, 0);
-  oled.setTextSize(2);
-  oled.println("INTENSIDAD");
+  oled.setCursor(10,0);
   oled.setTextSize(1);
-  oled.println("");
-  oled.println("1. (M2)     3.(M5)");
-  oled.println("");
-  oled.println("2. (M3,5)   4.(M7)");
-  oled.println("");
-  oled.print("A. Volver  M=[");
-  oled.print(intensidad);
-  oled.println("]");
-  oled.display();
-
-
-}
-
-void  menuTiempoPar(int tiempo){
-  
-  oled.clearDisplay();
-  oled.setTextColor(WHITE);
-  oled.setCursor(5, 0);
-  oled.setTextSize(2);
-  oled.println("--TIEMPO--");
+  oled.println("-- Manejo manual --");
   oled.setTextSize(1);
-  oled.println("");
-  oled.println("1. 15s     3. 45s");
-  oled.println("");
-  oled.println("2. 30s     4. 1min");
-  oled.println("");
-  oled.print("A. Volver  T=[");
-  oled.print(tiempo);
-  oled.println("]");
-  oled.display();
-
-}
-
-int seleccion_intensidad(char aux){
-
-
-
-    switch (aux){
-      case '1': return 5; break;
-      case '2': return 4; break;
-      case '3': return 3; break;
-      case '4': return 2; break;
-
-      
-    }
-  
-
-
-
-  
-}
-
-void  menuPrincipal(){
-
-  oled.clearDisplay();
-  oled.setTextColor(WHITE);
-  oled.setCursor(40,0);
-  oled.setTextSize(2);
-  oled.println("Menu");
-  oled.setTextSize(1);
-  oled.println("1.  Bluetooth");  
-  oled.println("2.  Intensidad");
-  oled.println("3.  Tiempo");
-  oled.println("4.  Verificar");
-  oled.println("");
+  oled.setCursor(0,18);
+  oled.print("1.  Intensidad");
+  oled.setCursor(0,30);
+  oled.print("2.  Duracion");
+  oled.setCursor(0,42);
+  oled.print("3.  Parametros");
+  oled.setCursor(0,54);
+  oled.print("B.  Simular");
   oled.display();
 }
 
-void sonido_M2(){
-  Serial.println("M2");
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-}
-
-void sonido_M3_5(){
-   Serial.println("M3,5");
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin); 
-}
-
-void sonido_M5(){
-   Serial.println("M5");
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-}
-
-void sonido_M7(){
-  Serial.println("M7");
-  tone(buzzer_pin, 1700);
-  delay(200);
-  noTone(buzzer_pin);
-}
-
-
-void quinceSegundos() {
-  oled.clearDisplay();
-  oled.setTextColor(WHITE);  
-  oled.setCursor(0, 30);    
-  oled.setTextSize(1);    
-  oled.print("15 segundos");
-  oled.display();
-}
-
-void duracion(int tiempo){
-
-  for(int i=0; i<tiempo+1; i++)
-  {
-    Serial.println(i);
-    delay(1000);
-     oled.clearDisplay();
-  oled.setTextColor(WHITE);  
-  oled.setCursor(10, 10);    
-  oled.setTextSize(1);    
-  oled.println("Tiempo transcurrido");
-
-  oled.setCursor(60, 30);    
-  oled.setTextSize(2);    
-  oled.print(i);
-  oled.display();
-  }
-}
-
-void resumen(int tiempo, int intensidad, int temperatura){
+void menu_intensidad(){
 
   oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setCursor(10,0);
-  oled.setTextSize(2);
-  oled.println("-RESUMEN-");
-  
-  oled.setCursor(0,20);    
-  oled.setTextSize(1);    
-  oled.print("Temperatura: ");
-  oled.print(temperatura);
-
-  oled.setCursor(0,30);    
-  oled.setTextSize(1);    
-  oled.print("Intensidad: ");
-  oled.print(intensidad);
-
-  oled.setCursor(0,40);    
-  oled.setTextSize(1);    
-  oled.print("Tiempo: ");
-  oled.print(tiempo);
+  oled.setTextSize(1);
+  oled.print("    Intensidad");
+  oled.setCursor(0, 20);
+  oled.print("1. M2      3. M5");
+  oled.setCursor(0, 34);
+  oled.print("2. M3,5    4. M7");
+  oled.setCursor(0, 56);
+  oled.print("A. Volver");
   oled.display();
-    
 }
 
-void datosAlmacenados(int tiempo, int intensidad){
+void  menu_duracion(){
+  
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,0);
+  oled.setTextSize(1);
+  oled.print("    Duracion");
+  oled.setCursor(0, 20);
+  oled.print("1. 15s      3. 45s");
+  oled.setCursor(0, 38);
+  oled.print("2. 30s      4. 60s");
+  oled.setCursor(0, 56);
+  oled.print("A. Volver");
+  oled.display();
+}
 
-  if(tiempo>0 && intensidad>0){
-    oled.clearDisplay();
-  oled.setTextColor(WHITE);  
-  oled.setCursor(10, 10);    
-  oled.setTextSize(2);    
-  oled.println("  Datos   guardados");
-  oled.print("Intensidad: ");
-  oled.println(intensidad);
-  oled.print("Tiempo: ");
-  oled.println(tiempo);
-  oled.display();
-    
-  }
-  else
-  {
-    oled.clearDisplay();
-  oled.setTextColor(WHITE);  
-  oled.setCursor(10, 10);    
-  oled.setTextSize(2);    
-  oled.println(" Datos NO guardados");
-  oled.display();
-    
-  }
+void sonido(){
+
+  tone(buzzer_pin, 1700);
+  delay(200);
+  noTone(buzzer_pin);
   
 }
+
+void muestra_parametros(int val_intesidad, int duracion){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(6, 0);
+  oled.setTextSize(1);
+  oled.print("Parametros de sismo");
+  oled.setCursor(0, 22);
+
+  intensidadEP = EEPROM.read(1);
+  tiempoEP = EEPROM.read(2);
   
+  if(val_intensidad == 0 && duracion == 0){
+    
+    oled.print("Intensidad: N/A");
+    oled.setCursor(0, 38);
+    oled.print("Duracion: N/A");
+  }
+  else if(val_intensidad != 0 && duracion == 0){
+
+    oled.print("Intensidad: "); oled.print("M "); oled.print(intensidadEP);
+    oled.setCursor(0, 38);
+    oled.print("Duracion: N/A");
+  }
+  else if(val_intensidad == 0 && duracion != 0){
+   
+    oled.print("Intensidad: N/A");
+    oled.setCursor(0, 38);
+    oled.print("Duracion: "); oled.print(tiempoEP); oled.print('s');
+  }
+  else{
+    oled.print("Intensidad: "); oled.print("M "); oled.print(intensidadEP);
+    oled.setCursor(0, 38);
+    oled.print("Duracion: "); oled.print(tiempoEP); oled.print('s');
+  }
+  oled.setCursor(0, 56);
+  oled.print("A.  Volver");
+  oled.display();
+}
+
+void simulacion(int intensidad){
+  
+    for(int k=0; k<= 110; k++){
+      servo2.write(k); servo1.write(k); 
+      delay(intensidad);
+    }
+}
+
+void volver(){
+  sonido();
+  tecla='X'; 
+}
+
+void sismo_en_curso(){
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setCursor(10,30);
+  oled.setTextSize(1);
+  oled.print("SISMO EN CURSO");
+  oled.display();
+}
+
+int factor_tiempo(int intensidad){
+  
+  switch(intensidad){
+
+    case 4: return 125;
+    case 3: return 90;
+    case 2: return 60;
+    case 1: return 30;
+  }
+}
 
 void setup() { 
 
-  Serial.begin(115200);
-  Wire.begin();        
+  Wire.begin();   
+  Serial.begin(9600);
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); 
   oled.clearDisplay();
   oled.display();
+  servo1.attach(5); servo2.attach(6);
+  pinMode(4, OUTPUT);
+
+  Serial.print ("Tamano EEPROM:");
+  Serial.println(EEPROM.length());
+
+
+   if (! rtc.begin()) {       // si falla la inicializacion del modulo
+      Serial.println("Modulo RTC no encontrado !");  // muestra mensaje de error
+       while (1);         // bucle infinito que detiene ejecucion del programa
+    }
+ rtc.adjust(DateTime(__DATE__, __TIME__));
 }
+  }
  
 void loop() {
-  if(intensidad>1)
-  {
-    digitalWrite(5, HIGH);
-    //menuIntensidadPar(intensidad);
-    op='B';
+
+
+  //Estructura EEPROM
+  DateTime fecha = rtc.now();
+
+  sw = digitalRead(sw1);
+  
+  if(sw==0){
+
+    menu_manual();
+    tecla = teclado.getKey();
+
+    if(tecla){
+      sonido();
+   
+    while(tecla=='1'){
+
+       
+       menu_intensidad();
+       aux = teclado.getKey();
+
+       switch(aux){
+
+              case '1' : sonido();intensidad = 4; val_intensidad = 2; break;
+              case '2' : sonido();intensidad = 3; val_intensidad = 3.5; break;
+              case '3' : sonido();intensidad = 2; val_intensidad = 5; break;
+              case '4' : sonido();intensidad = 1; val_intensidad = 7; break;
+              case 'A' : volver(); break;
+          }
+    }
     
-  }
-  if(tiempo>1){
-    digitalWrite(4, HIGH);
-  }
-  
-  op=0;
+    while(tecla=='2'){
 
-  //sw = digitalRead(sw1);
-  tecla= teclado.getKey();
-  if(tecla){
-    Serial.println(tecla);
-  }
-  //Serial.print("Intensidad: ");
-  //Serial.println(intensidad);
-  sw=1;
-switch(tecla)
-  {
-    //Menu Bluetooth
-    case '1': 
-      op='1';
-      tone(buzzer_pin, 1700);
-      delay(200);
-      noTone(buzzer_pin);
-    break;
-    //Menu manual
-    case '2':
-      op='2';
-      tone(buzzer_pin, 1700);
-      delay(200);
-      noTone(buzzer_pin);
-    break;
-    case '3':
-       op='3';
-       tone(buzzer_pin, 1700);
-       delay(200);
-        noTone(buzzer_pin);
-      break;
-     case '4':
-       op='4';
-       tone(buzzer_pin, 1700);
-       delay(200);
-        noTone(buzzer_pin);
-      break;
+       menu_duracion();
+       aux = teclado.getKey();
 
-    case 'A':
-      op='A';
-      tone(buzzer_pin, 1700);
-      delay(200);
-      noTone(buzzer_pin);
-    break;
-      case 'B':
-      op='B';
-      tone(buzzer_pin, 1700);
-      delay(200);
-      noTone(buzzer_pin);
-    break;
+       switch(aux){
 
-
-   }
-
-  if(sw==1){
-
-    if (menu==0){
-      switch (op)
-     {
-      case 'A':
-        menuPrincipal();
-        break;
-        
-      case '2':
-        menuIntensidadPar(intensidad);
-        menu=1;
-        break;
-
-      case '3':
-      if(intensidad>0){
-          menuTiempoPar(tiempo);
-        menu=2;}
-        break;
-        
-     case '4':
-      datosAlmacenados(tiempo,intensidad);
-      menu=2;
-      break;
-      
-      default: 
-        break;      
+              case '1' : sonido(); duracion = 15; fin=duracion*155; break;
+              case '2' : sonido(); duracion = 30; fin=duracion*157;break;
+              case '3' : sonido(); duracion = 45; fin=duracion*160;break;
+              case '4' : sonido(); duracion = 60; fin=duracion*162;break;
+              case 'A' : volver(); break;
+      }      
     }
-}
-
-  if (menu==1){
-      if(tecla){
-   switch(op)
-    {
-      case '1':
-        intensidad=1;
-        op=3;
-      break;
-      case '2':
-        intensidad=2;
-        op=3;
-      break;
-      case '3':
-        intensidad=3;
-        menu = 0;
-        
-      break;
-      case '4':
-        intensidad=4;
-      break;
-      case 'A':
-        menu=0;
-      break;
-      
-      default:
-        break;  
-    }
-  }
-     
     
+    while(tecla=='3'){
+
+        muestra_parametros(val_intensidad, duracion);
+        aux = teclado.getKey();
+
+        if(aux=='A'){
+
+          volver();
+        }
+      }
+      while(tecla=='B'){
+
+        sismo_en_curso();
+        factor = factor_tiempo(intensidad); Serial.println(factor);
+        while(t  <=  fin){
+
+          simulacion(intensidad);
+          t+=factor;
+      }   
+      factor = 0;
+      t=0;
+      duracion=0;
+      intensidad=0;
+      val_intensidad=0;
+      volver();
     }
-
-if (menu==2){
-   switch(op)
-    {
-      case '1':
-        tiempo=1;
-      break;
-      case '2':
-        tiempo=2;
-      break;
-      case '3':
-        tiempo=3;
-      break;
-      case '4':
-        tiempo=4;
-      break;
-      case 'A':
-        menu=0;
-      break;
-      
-      default: 
-        break;  
-    }
-    }
-
-
-
-
-
-
   }
-  
- else{off();}
+ }
+  else{
 
- 
-  
+      menu_bt();
+      while(Serial.available()>0){
+      
+         delay(10);
+         x = Serial.read(); 
+         s+=x;
+      }
+      if(s.length() > 0){
 
-}
+         s.toLowerCase();
+         Serial.println(s);
+         
+         if(s=="modo 1"){
 
+            intensidad = 4; 
+            duracion = 15;
+            fin=duracion*160;
+              EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
+            sismo_en_curso();
+            factor = factor_tiempo(intensidad);
+            while(t  <=  fin){
 
-
-
-
-        
-        
+              simulacion(intensidad);
+              t+=factor;
+            }
+            t=0;   
+         }
+         if(s=="modo 2"){
           
+           intensidad = 3; 
+           duracion = 15;
+           fin=duracion*160;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
+           sismo_en_curso();
+           factor = factor_tiempo(intensidad);
+           while(t  <=  fin){
 
+              simulacion(intensidad);
+              t+=factor;
+           }   
+           t=0;
+         }
+         
+         if(s=="modo 3"){
+          
+           intensidad = 2; 
+           duracion = 15;
+           fin=duracion*160;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
+           sismo_en_curso();
+           factor = factor_tiempo(intensidad);
+           while(t  <=  fin){
 
+              simulacion(intensidad);
+              t+=factor;
+           }
+           t=0;   
+         }
+         
+         if(s=="modo 4"){
+            
+           intensidad = 1; 
+           duracion = 30;
+           fin=duracion*166;
+             EEPROM.update(0,Fecha); //Registra
+             EEPROM.update(1,intensidad); //Registra
+             EEPROM.update(2,duracion); //Registra
+           sismo_en_curso();
+           factor = factor_tiempo(intensidad);
+           while(t  <=  fin){
 
-
-
-  
-  
+              simulacion(intensidad);
+              t+=factor;
+           }
+           t=0;
+          }
+    }
+    s="";
+  }
+}
