@@ -1,28 +1,84 @@
-#include <Wire.h>     // libreria para bus I2C
-#include <Adafruit_GFX.h>   // libreria para pantallas graficas
-#include <Adafruit_SSD1306.h>   // libreria para controlador SSD1306
- 
-#define ANCHO 128     // reemplaza ocurrencia de ANCHO por 128
-#define ALTO 64       // reemplaza ocurrencia de ALTO por 64
+#include <EEPROM.h>
+#include <Wire.h>     
+#include <Adafruit_GFX.h>  
+#include <Adafruit_SSD1306.h> 
 
-#define OLED_RESET 4      // necesario por la libreria pero no usado
-Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);  // crea objeto
+#define ANCHO 128    
+#define ALTO 64 
+#define OLED_RESET 4 
 
-int x=0;
-void setup() {
+Adafruit_SSD1306 oled(ANCHO, ALTO, &Wire, OLED_RESET);    
+
+int address; //direccion en la eeprom
+int limite=5; //Cantidad de direcciones a utilizar
+int ran = 0;
+int val = 0;
+void setup () {
   Wire.begin();         // inicializa bus I2C
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); // inicializa pantalla con direccion 0x3C
+  oled.clearDisplay();
+  oled.display();
+  Serial.begin(9600);
+  Serial.print ("Tamano EEPROM:");
+  Serial.println(EEPROM.length());//ArduinoUno: 1kb EEPROM storage
+  delay (2000);
 }
- 
-void loop() 
+
+void loop ()
 {
-        // limpia pantalla
-  oled.clearDisplay(); 
-  for (x=10; x<100; x++)
+
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
+  oled.setCursor(0, 0);     // ubica cursor en inicio de coordenadas 0,0
+  oled.setTextSize(1);      // establece tamano de texto en 1
+  oled.print("Tamano EEPROM: "); 
+  oled.println (EEPROM.length());
+  oled.display();
+  delay (2000);
+  for (address=0; address< limite; address++)
   {
-     oled.clearDisplay(); 
-    oled.drawCircle(x, x, 10, WHITE);
+    ran=random(0,10); 
+    EEPROM.update(address,ran); //Guarda val en la direccion address
+    oled.print(address);
+    oled.clearDisplay();
+    oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
+    oled.setCursor(0, 0);     // ubica cursor en inicio de coordenadas 0,0
+    oled.setTextSize(1);      // establece tamano de texto en 1
+    oled.print("Guardando: "); 
+    oled.println (ran);
     oled.display();
-    delay(10);
+    delay(1000);
+    
   }
+  Serial.println("Escritura terminada");
+  Serial.println("-------------------");
+  delay(1000);
+  oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
+  oled.setCursor(0, 10);     // ubica cursor en inicio de coordenadas 0,0
+  oled.setTextSize(1);      // establece tamano de texto en 1
+  oled.print("Escritura terminada"); 
+  oled.display();
+  delay(1000);
+  
+  //////////////////////////////////////////
+  Serial.println("Inicio de lectura");
+  delay(5000);
+  for (address=0; address< limite; address++)
+  {
+    val=EEPROM.read(address); 
+    oled.clearDisplay();
+    oled.setTextColor(WHITE);   // establece color al unico disponible (pantalla monocromo)
+    oled.setCursor(0, 0);     // ubica cursor en inicio de coordenadas 0,0
+    oled.setTextSize(1);      // establece tamano de texto en 1
+    oled.print("Direccion: "); 
+    oled.println (address);
+    oled.print("Valor: "); 
+    oled.println (val);
+    oled.display();
+    delay(760);
+  }
+  Serial.println("Lectura terminada");
+  Serial.println("-------------------");
+  
+
 }

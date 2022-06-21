@@ -52,8 +52,8 @@ void loop() {
  
   //-- Scaled and calibrated output:
   // Accel
-
-    oled.clearDisplay();
+    if((sensor.ax()) < 0,06){
+      oled.clearDisplay();
     oled.setTextColor(WHITE);  
     oled.setCursor(0, 0);    
     oled.setTextSize(1);    
@@ -72,6 +72,9 @@ void loop() {
     oled.print("z: ");
     oled.println(sensor.gz());
     oled.display();
+      
+    }
+    
 
 
     /*
